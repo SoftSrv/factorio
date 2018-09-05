@@ -1,0 +1,41 @@
+resources:
+  - name: factorio-repo
+    type: gitRepo
+    integration: github
+    versionTemplate:
+      sourceName: softsrv/factorio
+      branch: master
+
+  - name: factorio-params #seeds
+    type: params
+    versionTemplate:
+      fVersion: "0.16"
+      dropletId: abcd
+      snapshotId: ""
+
+  - name: digitalocean-creds
+    type: integration
+    integration: digitalocean-creds
+
+  - name: factorio-hook
+    type: webhook
+    versionTemplate:
+      webhookKey: four-fluffy-feathers-on-a-fiffer-feffer-fef
+
+jobs:
+  - name: factorio-controller
+    type: runSh
+    steps:
+      - IN: digitalocean-creds
+      - IN: factorio-hook
+      - IN: factorio-repo
+        switch: off
+      - IN: factorio-params
+        switch: off
+      - TASK:
+          script:
+            - echo "starting..."
+            - pushd $(shipctl get_resource_state factorio-repo)
+            - if [ -n $dropletId && -z $snapshotId ]; then ./boot.sh; fi
+            - if [ -n $snapshotId && -z $dropletId ]; then ./destroy.sh; fi
+            
