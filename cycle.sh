@@ -70,8 +70,8 @@ write_state() {
   write_msg "writing new values to state:"
   write_msg "dropletId: $dropletId"
   write_msg "snapshotId: $snapshotId"
-  echo "snapshotId=\"$snapshotId\"" > state.env
-  echo "dropletId=\"$dropletId\"" >> state.env
+  echo "export snapshotId=\"$snapshotId\"" > state.env
+  echo "export dropletId=\"$dropletId\"" >> state.env
   shipctl copy_file_to_state state.env
   write_msg "done"
 }

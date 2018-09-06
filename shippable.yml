@@ -10,8 +10,8 @@ resources:
     type: params
     versionTemplate:
       params:
-        init_dropletId: ""
-        init_snapshotId: 37946678
+        init_dropletId: "108883768"
+        init_snapshotId: ""
       
 
   - name: digitalocean-creds
