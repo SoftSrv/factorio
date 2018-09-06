@@ -9,7 +9,7 @@ exec_doctl() {
 }
 
 validate_prereqs() {
-  if [ -z "$dropletId" && -z "$snapshotId" ]; then
+  if [ -z "$dropletId" ] && [ -z "$snapshotId" ]; then
     echo "need a dropletId or a snapshotId to proceed"
     exit 99
   elif [ -z "$DO_TOKEN" ]; then
@@ -74,7 +74,7 @@ write_state() {
 
 
 validate_prereqs
-if [ -n $dropletId && -z $snapshotId ]; then
+if [ -n $dropletId ] && [ -z $snapshotId ]; then
   get_droplet
   power_down
   sleep 2
@@ -83,7 +83,7 @@ if [ -n $dropletId && -z $snapshotId ]; then
   destroy_droplet
   sleep 2
   write_state
-elif [ -n $snapshotId && -z $dropletId ]; then 
+elif [ -n $snapshotId ] && [ -z $dropletId ]; then 
   restore_snapshot
   sleep 2
   destroy_snapshot
