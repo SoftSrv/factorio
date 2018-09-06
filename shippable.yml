@@ -9,7 +9,8 @@ resources:
   - name: factorio-params #seeds
     type: params
     versionTemplate:
-      init_dropletId: 108875261
+      params:
+        init_dropletId: 108875261
       
 
   - name: digitalocean-creds

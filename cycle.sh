@@ -55,6 +55,7 @@ destroy_droplet() {
   write_msg "destroying droplet $dropletId"
   exec_doctl compute droplet delete $dropletId -f
   write_msg "done"
+  dropletId=""
 }
 restore_snapshot() {
   write_msg "creating new droplet from snapshot $snapshotId"
@@ -68,7 +69,7 @@ restore_snapshot() {
 write_state() {
   echo "snapshotId=\"$snapshotId\"" > state.env
   echo "dropletId=\"$dropletId\"" >> state.env
-  shipctl copy_file_to_state /tmp/state.env
+  shipctl copy_file_to_state state.env
 }
 
 
