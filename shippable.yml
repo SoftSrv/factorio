@@ -48,7 +48,7 @@ jobs:
             - echo "starting..."
             - shipctl copy_file_from_prev_state state.env .
             - if [ -f "state.env" ]; then source state.env; fi
-            - if [ "$JOB_TRIGGERED_BY_NAME" == "factorio-params"]; then export dropletId=$init_dropletId; fi
+            - if [ "$JOB_TRIGGERED_BY_NAME" == "factorio-params" ] || [ -z "$dropletId" ]; then export dropletId=$init_dropletId; fi
             - ./cycle.sh
             
             
