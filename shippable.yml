@@ -47,7 +47,7 @@ jobs:
             - pushd $(shipctl get_resource_state factorio-repo)
             - echo "starting..."
             - shipctl copy_file_from_prev_state state.env .
-            - if [ -f "state.env" ]; then source state.env fi
+            - if [ -f "state.env" ]; then source state.env; fi
             - if [ "$JOB_TRIGGERED_BY_NAME" == "factorio-params"]; then export dropletId=$init_dropletId; fi
             - ./cycle.sh
             
