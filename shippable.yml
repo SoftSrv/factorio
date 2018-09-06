@@ -1,7 +1,7 @@
 resources:
   - name: factorio-repo
     type: gitRepo
-    integration: github
+    integration: "trriplejay github"
     versionTemplate:
       sourceName: softsrv/factorio
       branch: master
