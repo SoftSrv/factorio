@@ -33,7 +33,6 @@ jobs:
       - IN: factorio-repo
         switch: off
       - IN: factorio-params
-        switch: off
       - TASK:
           name: cycle-do-box
           runtime:
@@ -50,16 +49,21 @@ jobs:
             - echo "starting..."
             - shipctl copy_file_from_prev_state state.env .
             - if [ -f "state.env" ]; then source state.env; fi
-            - if [ -z "$dropletId" ] && [ -z "$snapshotId" ]; then export dropletId=$init_dropletId; fi
             - >
-              if [ "$JOB_TRIGGERED_BY_NAME" == "factorio-params" ]; then 
-                if [ "$action" == "rebuild" ]; then
-                  export snapshotId=$init_snapshotId
-                  export dropletId=""
-                elif [ "$action" == "destroy" ]; then
-                  export dropletId=$init_dropletId
-                  export snapshotId=""
-                fi
+              if [ "$JOB_TRIGGERED_BY_NAME" == "factorio-params" ]; then   
+                export snapshotId=$init_snapshotId
+                export dropletId=$init_dropletId
+              fi
+            - >
+              if [ "$FORCE_ACTION" == "rebuild" ]; then
+                echo "forcing rebuild from snapshotId $init_snapshotId"
+                export snapshotId="$init_snapshotId"
+                export dropletId=""
+              elif [ "$FORCE_ACTION" == "destroy" ]; then
+                echo "forcing destruction of dropletId $init_dropletId"
+                export snapshotId=""
+                export dropletId="$init_dropletId"
+              fi
             - ./cycle.sh
             
             
