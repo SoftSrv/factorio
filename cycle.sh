@@ -67,9 +67,13 @@ restore_snapshot() {
   write_msg "found new droplet id: $dropletId"
 }
 write_state() {
+  write_msg "writing new values to state:"
+  write_msg "dropletId: $dropletId"
+  write_msg "snapshotId: $snapshotId"
   echo "snapshotId=\"$snapshotId\"" > state.env
   echo "dropletId=\"$dropletId\"" >> state.env
   shipctl copy_file_to_state state.env
+  write_msg "done"
 }
 
 
@@ -89,7 +93,10 @@ elif [ -n $snapshotId ] && [ -z $dropletId ]; then
   destroy_snapshot
   sleep 2
   write_state
+else
+  write_msg "bad state"
+  write_msg "dropletId: $dropletId"
+  write_msg "snapshotId: $snapshotId"
 fi
 
 write_msg "script complete"
-cat state.env
