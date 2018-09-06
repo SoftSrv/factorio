@@ -9,9 +9,8 @@ resources:
   - name: factorio-params #seeds
     type: params
     versionTemplate:
-      fVersion: "0.16"
-      dropletId: abcd
-      snapshotId: ""
+      init_dropletId: 108875261
+      
 
   - name: digitalocean-creds
     type: integration
@@ -33,9 +32,22 @@ jobs:
       - IN: factorio-params
         switch: off
       - TASK:
+          name: cycle-do-box
+          runtime:
+            options:
+              env:
+                - fVersion: "0.16"
+                - snapshotName: "factorio-ss"
+                - snapshotId: ""
+                - region: sfo2
+                - size: s-1vcpu-2gb
+
           script:
-            - echo "starting..."
             - pushd $(shipctl get_resource_state factorio-repo)
-            - if [ -n $dropletId && -z $snapshotId ]; then ./boot.sh; fi
-            - if [ -n $snapshotId && -z $dropletId ]; then ./destroy.sh; fi
+            - echo "starting..."
+            - shipctl copy_file_from_prev_state state.env .
+            - source state.env
+            - if [ "$JOB_TRIGGERED_BY_NAME" == "factorio-params"]; then export dropletId=$init_dropletId; fi
+            - ./cycle.sh
+            
             
