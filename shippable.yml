@@ -56,6 +56,7 @@ jobs:
                 export message=$(shipctl get_json_value "$HOOK_META/version.json" "version.propertyBag.payload.text")
                 export slack_user=$(shipctl get_json_value "$HOOK_META/version.json" "version.propertyBag.payload.user_name")
                 if [ "$message" == "start" ] && [ -z $snapshotId ]; then
+                  ls
                   ./respond.sh "Skipping start. The server should already be running."
                   export skip=true
                 elif [ "$message" == "stop" ] && [ -z $dropletId ]; then
