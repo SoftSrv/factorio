@@ -88,7 +88,7 @@ write_state() {
 
 
 validate_prereqs
-if [ -n $dropletId ] && [ -z $snapshotId ]; then
+if [ -n "$dropletId" ] && [ -z "$snapshotId" ]; then
   get_droplet
   power_down
   sleep 2
@@ -97,7 +97,7 @@ if [ -n $dropletId ] && [ -z $snapshotId ]; then
   destroy_droplet
   sleep 2
   write_state
-elif [ -n $snapshotId ] && [ -z $dropletId ]; then 
+elif [ -n "$snapshotId" ] && [ -z "$dropletId" ]; then 
   send_msg "Restoring droplet from snapshot $snapshotId"
   restore_snapshot
   sleep 2
@@ -105,6 +105,7 @@ elif [ -n $snapshotId ] && [ -z $dropletId ]; then
   sleep 2
   write_state
 else
+  send_msg "Action '$message' failed. Error in droplet/snapshot configuration <$BUILD_URL|logs>"
   write_msg "bad state"
   write_msg "dropletId: $dropletId"
   write_msg "snapshotId: $snapshotId"
