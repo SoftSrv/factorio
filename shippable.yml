@@ -55,6 +55,7 @@ jobs:
 
           script:
             - pushd $(shipctl get_resource_state factorio-repo)
+            - source send_msg.sh
             - echo "starting..."
             - shipctl copy_file_from_prev_state state.env .
             - if [ -f "state.env" ]; then source state.env; fi
@@ -65,24 +66,26 @@ jobs:
                 export slack_user=$(shipctl get_json_value "$HOOK_META/version.json" "version.propertyBag.payload.user_name")
                 if [ "$message" == "start" ] && [ -z $snapshotId ]; then
                   ls
-                  ./send_msg.sh factorio-slack @trriplejay "Skipping start. The server should already be running."
+                  send_msg "Skipping start. The server should already be running."
                   #slack_text=
                   #echo "{\"text\":\"$slack_text\",\"channel\":\"@trriplejay\"}" > payload.json
                   #shipctl notify factorio-slack -payload payload.json
                   #./respond.sh "Skipping start. The server should already be running."
                   skip=true
                 elif [ "$message" == "stop" ] && [ -z $dropletId ]; then
-                  ./respond.sh "Skipping stop. The server is already stopped."
+                  send_msg "Skipping stop. The server is already stopped."
                   skip=true
                 elif [ "$message" != "stop" ] && [ "$message" != "start" ]; then
-                  ./respond.sh "bad command. only 'start' or 'stop' are accepted"
+                  send_msg "bad command. only 'start' or 'stop' are accepted"
                   skip=true
                 fi
               elif [ "$FORCE_ACTION" == "rebuild" ]; then
+                send_msg "rebuild has been forced."
                 echo "forcing rebuild from snapshotId $init_snapshotId"
                 export snapshotId="$init_snapshotId"
                 export dropletId=""
               elif [ "$FORCE_ACTION" == "destroy" ]; then
+                send_msg "destroy has been forced.
                 echo "forcing destruction of dropletId $init_dropletId"
                 export snapshotId=""
                 export dropletId="$init_dropletId"
@@ -92,7 +95,7 @@ jobs:
             - if [ -n "$skip" ]; then shipctl copy_file_from_prev_state state.env $JOB_STATE; fi
     on_failure:
       script:
-        - ./respond.sh "An error occured. see $BUILD_URL for more details" 
+        - send_msg "An error occured. see <$BUILD_URL|here> for more details" 
         - shipctl copy_file_from_prev_state state.env $JOB_STATE       
             
             

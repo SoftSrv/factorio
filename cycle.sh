@@ -56,7 +56,7 @@ destroy_droplet() {
   exec_doctl compute droplet delete $dropletId -f
   write_msg "done"
   dropletId=""
-  ./respond.sh "Droplet has been destroyed by $slack_user"
+  send_msg "Droplet has been destroyed by $slack_user"
 }
 restore_snapshot() {
   write_msg "restoring droplet from snapshot $snapshotId"
@@ -69,7 +69,7 @@ restore_snapshot() {
   write_msg "found new droplet id: $dropletId"
   write_msg "publicIP is $publicIP"
   shipctl put_resource_state $JOB_NAME versionName $publicIP
-  ./respond.sh "New droplet started by $slack_user with IP: $publicIP"
+  send_msg "New droplet started by $slack_user with IP: $publicIP"
   write_msg "done"
 }
 write_state() {

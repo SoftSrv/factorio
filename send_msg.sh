@@ -1,8 +1,7 @@
 #!/bin/bash
+# $1 is the message to send
 
-resource=$1
-target=$2
-message=$3
-echo "{\"text\":\"$3\",\"channel\":\"$2\"}" > /tmp/payload.json
-
-shipctl notify $1 --payload=/tmp/payload.json
+send_msg() {
+    echo "{\"text\":\"$1\"}" > /tmp/payload.json
+    shipctl notify factorio-slack --payload=/tmp/payload.json
+}
