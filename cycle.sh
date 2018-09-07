@@ -85,6 +85,7 @@ write_state() {
 
 validate_prereqs
 if [ -n $dropletId ] && [ -z $snapshotId ]; then
+  send_msg "Destroying droplet $dropletId"
   get_droplet
   power_down
   sleep 2
@@ -94,6 +95,7 @@ if [ -n $dropletId ] && [ -z $snapshotId ]; then
   sleep 2
   write_state
 elif [ -n $snapshotId ] && [ -z $dropletId ]; then 
+  send_msg "Restoring droplet from snapshot $snapshotId"
   restore_snapshot
   sleep 2
   destroy_snapshot

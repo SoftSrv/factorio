@@ -76,7 +76,7 @@ jobs:
                   send_msg "Skipping stop. The server is already stopped."
                   skip=true
                 elif [ "$message" != "stop" ] && [ "$message" != "start" ]; then
-                  send_msg "bad command. only 'start' or 'stop' are accepted"
+                  send_msg "bad command '$message'. only 'start' or 'stop' are accepted"
                   skip=true
                 fi
               elif [ "$FORCE_ACTION" == "rebuild" ]; then
@@ -85,7 +85,7 @@ jobs:
                 export snapshotId="$init_snapshotId"
                 export dropletId=""
               elif [ "$FORCE_ACTION" == "destroy" ]; then
-                send_msg "destroy has been forced.
+                send_msg "destroy has been forced."
                 echo "forcing destruction of dropletId $init_dropletId"
                 export snapshotId=""
                 export dropletId="$init_dropletId"
