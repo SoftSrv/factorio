@@ -78,6 +78,7 @@ jobs:
               fi
 
             - if [ -z "$skip" ]; then ./cycle.sh; fi
+            - if [ -n "$skip" ]; then shipctl copy_file_from_prev_state state.env $JOB_STATE; fi
     on_failure:
       script:
         - ./respond.sh "An error occured. see $BUILD_URL for more details"        
