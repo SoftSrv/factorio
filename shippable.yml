@@ -12,6 +12,13 @@ resources:
       params:
         init_dropletId: "108883768"
         init_snapshotId: ""
+
+  - name: factorio-slack
+    type: notification
+    integration: factorio-slack
+    versionTemplate:
+      recipients:
+        - "#factorio"
       
 
   - name: digitalocean-creds
@@ -33,6 +40,7 @@ jobs:
       - IN: factorio-repo
         switch: off
       - IN: factorio-params
+      - IN: factorio-slack
       - TASK:
           name: cycle-do-box
           runtime:
@@ -43,7 +51,7 @@ jobs:
                 - snapshotId: ""
                 - region: sfo2
                 - size: s-1vcpu-2gb
-                - skip: false
+                - skip: ""
 
           script:
             - pushd $(shipctl get_resource_state factorio-repo)
@@ -53,12 +61,15 @@ jobs:
             - >
               if [ "$JOB_TRIGGERED_BY_NAME" == "factorio-hook" ]; then
                 HOOK_META=$(shipctl get_resource_meta factorio-hook)
-                export response_url=$(shipctl get_json_value "$HOOK_META/version.json" "version.propertyBag.payload.response_url")
                 export message=$(shipctl get_json_value "$HOOK_META/version.json" "version.propertyBag.payload.text")
                 export slack_user=$(shipctl get_json_value "$HOOK_META/version.json" "version.propertyBag.payload.user_name")
                 if [ "$message" == "start" ] && [ -z $snapshotId ]; then
                   ls
-                  ./respond.sh "Skipping start. The server should already be running."
+                  ./send_msg.sh factorio-slack @trriplejay "Skipping start. The server should already be running."
+                  #slack_text=
+                  #echo "{\"text\":\"$slack_text\",\"channel\":\"@trriplejay\"}" > payload.json
+                  #shipctl notify factorio-slack -payload payload.json
+                  #./respond.sh "Skipping start. The server should already be running."
                   skip=true
                 elif [ "$message" == "stop" ] && [ -z $dropletId ]; then
                   ./respond.sh "Skipping stop. The server is already stopped."
@@ -81,6 +92,7 @@ jobs:
             - if [ -n "$skip" ]; then shipctl copy_file_from_prev_state state.env $JOB_STATE; fi
     on_failure:
       script:
-        - ./respond.sh "An error occured. see $BUILD_URL for more details"        
+        - ./respond.sh "An error occured. see $BUILD_URL for more details" 
+        - shipctl copy_file_from_prev_state state.env $JOB_STATE       
             
             
