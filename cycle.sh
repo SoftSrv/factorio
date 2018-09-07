@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/bin/bash 
+set -e
 #DO_TOKEN should be pre-defined
 source send_msg.sh
 write_msg() {
@@ -27,6 +28,7 @@ get_droplet() {
   write_msg "got droplet with id $dropletId"
 }
 power_down() {
+  send_msg "Shutting down droplet $dropletId"
   write_msg "shutting down $dropletId"
   exec_doctl compute droplet-action power-off $dropletId --wait --no-header --format Status,CompletedAt
   write_msg "done"
@@ -37,7 +39,7 @@ power_up() {
   write_msg "done"
 }
 take_snapshot() {
-  send_msg "taking snapshot. this might take a minute."
+  send_msg "Taking snapshot. This might take a minute."
   write_msg "taking snapshot of droplet $dropletId"
   exec_doctl compute droplet-action snapshot $dropletId --no-header --format ID --snapshot-name $snapshotName --wait
   write_msg "done"
@@ -53,18 +55,19 @@ destroy_snapshot() {
   snapshotId=""
 }
 destroy_droplet() {
+  send_msg "Destroying droplet $dropletId"
   write_msg "destroying droplet $dropletId"
   exec_doctl compute droplet delete $dropletId -f
   write_msg "done"
   dropletId=""
-  send_msg "Droplet has been destroyed by $slack_user"
+  send_msg "Droplet has been destroyed."
 }
 restore_snapshot() {
   write_msg "restoring droplet from snapshot $snapshotId"
-  result=$(doctl compute droplet create factorio --image $snapshotId --tag-name factorio --region $region --size $size --wait --no-headers --format ID,PublicIPv4 -t $DO_TOKEN)
+  exec_doctl compute droplet create factorio --image $snapshotId --tag-name factorio --region $region --size $size --wait
   write_msg "done"
-  #write_msg "finding new dropletId"
-  #result=$(doctl compute droplet list --no-header --format ID,PublicIPv4 --tag-name factorio -t $DO_TOKEN)
+  write_msg "finding new dropletId and publicIP"
+  result=$(doctl compute droplet list --no-header --format ID,PublicIPv4 --tag-name factorio -t $DO_TOKEN)
   dropletId=$(awk '{print $1}' <<< result)
   publicIP=$(awk '{print $2}' <<< result)
   write_msg "found new droplet id: $dropletId"
@@ -86,7 +89,6 @@ write_state() {
 
 validate_prereqs
 if [ -n $dropletId ] && [ -z $snapshotId ]; then
-  send_msg "Destroying droplet $dropletId"
   get_droplet
   power_down
   sleep 2
