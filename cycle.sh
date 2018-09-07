@@ -1,6 +1,6 @@
 #!/bin/bash
 #DO_TOKEN should be pre-defined
-
+source send_msg.sh
 write_msg() {
   echo "---> $@"
 }
@@ -37,6 +37,7 @@ power_up() {
   write_msg "done"
 }
 take_snapshot() {
+  send_msg "taking snapshot. this might take a minute."
   write_msg "taking snapshot of droplet $dropletId"
   exec_doctl compute droplet-action snapshot $dropletId --no-header --format ID --snapshot-name $snapshotName --wait
   write_msg "done"
