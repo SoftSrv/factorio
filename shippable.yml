@@ -54,7 +54,7 @@ jobs:
           runtime:
             options:
               env:
-                REPORT_ONLY: true
+                - REPORT_ONLY: true
           script:
             - pushd $(shipctl get_resource_state factorio-repo)
             - source send_msg.sh
