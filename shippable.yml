@@ -12,18 +12,56 @@ resources:
     versionTemplate:
       recipients:
         - "#factorio"
-      
+
+  - name: factorio-timer
+    type: time
+    versionTemplate:
+      interval: "0 */2 * * *"
 
   - name: digitalocean-creds
     type: integration
     integration: digitalocean-creds
-
+    
+  - name: factorio-do-keys
+    type: integration
+    integration: factorio-do-keys
+    
+  - name: factorio-trigger
+    type: notification
+    integration: factorio-trigger
+    
   - name: factorio-hook
     type: webhook
     versionTemplate:
       webhookKey: four-fluffy-feathers-on-a-fiffer-feffer-fef
 
 jobs:
+  - name: factorio-idlechecker
+    type: runSh
+    allowPublicAccess: true
+    steps:
+      - IN: digitalocean-creds
+      - IN: factorio-do-keys
+      - IN: factorio-slack
+      - IN: factorio-timer
+      - IN: factorio-trigger
+      - IN: factorio-controller
+        switch: off
+      - IN: factorio-repo
+        switch: off
+      - TASK:
+          name: idlechecker
+          runtime:
+            options:
+              env:
+                REPORT_ONLY: true
+          script:
+            - pushd $(shipctl get_resource_state factorio-repo)
+            - source send_msg.sh
+            - echo "hello world. report only is $REPORT_ONLY"
+            - send_msg "checking server state..."
+            
+            
   - name: factorio-controller
     type: runSh
     allowPublicAccess: true
