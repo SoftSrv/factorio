@@ -3,7 +3,7 @@ resources:
     type: gitRepo
     integration: "trriplejay github"
     versionTemplate:
-      sourceName: softsrv/factorio
+      sourceName: SoftSrv/factorio
       branch: master
 
   - name: factorio-params #seeds
@@ -43,6 +43,7 @@ jobs:
                 - snapshotId: ""
                 - region: sfo2
                 - size: s-1vcpu-2gb
+                - skip: false
 
           script:
             - pushd $(shipctl get_resource_state factorio-repo)
@@ -58,10 +59,13 @@ jobs:
                 if [ "$message" == "start" ] && [ -z $snapshotId ]; then
                   ls
                   ./respond.sh "Skipping start. The server should already be running."
-                  export skip=true
+                  skip=true
                 elif [ "$message" == "stop" ] && [ -z $dropletId ]; then
                   ./respond.sh "Skipping stop. The server is already stopped."
-                  export skip=true
+                  skip=true
+                elif [ "$message" != "stop" ] && [ "$message" != "start" ]; then
+                  ./respond.sh "bad command. only 'start' or 'stop' are accepted"
+                  skip=true
                 fi
               elif [ "$FORCE_ACTION" == "rebuild" ]; then
                 echo "forcing rebuild from snapshotId $init_snapshotId"
