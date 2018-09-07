@@ -73,7 +73,7 @@ restore_snapshot() {
   write_msg "found new droplet id: $dropletId"
   write_msg "publicIP is $publicIP"
   shipctl put_resource_state $JOB_NAME versionName $publicIP
-  send_msg "New droplet started by $slack_user with IP: $publicIP"
+  send_msg "New droplet started with IP: $publicIP"
   write_msg "done"
 }
 write_state() {
