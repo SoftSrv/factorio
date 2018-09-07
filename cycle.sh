@@ -68,12 +68,12 @@ restore_snapshot() {
   write_msg "done"
   write_msg "finding new dropletId and publicIP"
   result=$(doctl compute droplet list --no-header --format ID,PublicIPv4 --tag-name factorio -t $DO_TOKEN)
-  dropletId=$(awk '{print $1}' <<< result)
-  publicIP=$(awk '{print $2}' <<< result)
+  dropletId=$(awk '{print $1}' <<< $result)
+  publicIP=$(awk '{print $2}' <<< $result)
   write_msg "found new droplet id: $dropletId"
   write_msg "publicIP is $publicIP"
-  shipctl put_resource_state $JOB_NAME versionName $publicIP
-  send_msg "New droplet started with IP: $publicIP"
+  shipctl put_resource_state $JOB_NAME versionName "$publicIP"
+  send_msg "New droplet started at IP: $publicIP"
   write_msg "done"
 }
 write_state() {
