@@ -70,6 +70,8 @@ jobs:
                 elif [ "$message" != "stop" ] && [ "$message" != "start" ]; then
                   send_msg "Bad command '$message'. only 'start' or 'stop' are accepted"
                   skip=true
+                else
+                  send_msg "$message action initiated by $slack_user"
                 fi
               elif [ "$FORCE_ACTION" == "rebuild" ]; then
                 send_msg "Rebuild has been forced."
@@ -88,7 +90,7 @@ jobs:
                 shipctl copy_file_to_state state.env
                 skip=true
               fi
-
+            
             - if [ -z "$skip" ]; then ./cycle.sh; fi
             - if [ -n "$skip" ]; then shipctl copy_file_from_prev_state state.env $JOB_STATE; fi
     on_failure:
