@@ -56,15 +56,21 @@ destroy_droplet() {
   exec_doctl compute droplet delete $dropletId -f
   write_msg "done"
   dropletId=""
+  ./respond.sh "Droplet has been destroyed by $slack_user"
 }
 restore_snapshot() {
   write_msg "creating new droplet from snapshot $snapshotId"
   exec_doctl compute droplet create factorio --image $snapshotId --tag-name factorio --region $region --size $size --wait
   write_msg "done"
   write_msg "finding new dropletId"
-  dropletId=$(exec_doctl compute droplet list --format ID --no-header --tag-name factorio)
-  write_msg "done"
+  result=$(doctl compute droplet list --no-header --format ID,PublicIPv4 --tag-name factorio -t $DO_TOKEN)
+  dropletId=$(awk '{print $1}' <<< result)
+  publicIP=$(awk '{print $2}' <<< result)
   write_msg "found new droplet id: $dropletId"
+  write_msg "publicIP is $publicIP"
+  shipctl put_resource_state $JOB_NAME versionName $publicIP
+  ./respond.sh "New droplet started by $slack_user with IP: $publicIP"
+  write_msg "done"
 }
 write_state() {
   write_msg "writing new values to state:"

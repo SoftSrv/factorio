@@ -49,12 +49,19 @@ jobs:
             - shipctl copy_file_from_prev_state state.env .
             - if [ -f "state.env" ]; then source state.env; fi
             - >
-              if [ "$JOB_TRIGGERED_BY_NAME" == "factorio-params" ]; then   
-                export snapshotId=$init_snapshotId
-                export dropletId=$init_dropletId
-              fi
-            - >
-              if [ "$FORCE_ACTION" == "rebuild" ]; then
+              if [ "$JOB_TRIGGERED_BY_NAME" == "factorio-hook" ]; then
+                HOOK_META=$(shipctl get_resource_meta factorio-hook)
+                export response_url=$(shipctl get_json_value "$HOOK_META/version.json" "version.propertyBag.payload.response_url")
+                export message=$(shipctl get_json_value "$HOOK_META/version.json" "version.propertyBag.payload.text")
+                export user=$(shipctl get_json_value "$HOOK_META/version.json" "version.propertyBag.payload.user_name")
+                if [ "$message" == "start" ] && [ -z $snapshotId ]; then
+                  ./respond.sh "Skipping start. The server should already be running."
+                  export skip=true
+                elif [ "$message" == "stop" ] && [ -z $dropletId ]; then
+                  ./respond.sh "Skipping stop. The server is already stopped."
+                  export skip=true
+                fi
+              elif [ "$FORCE_ACTION" == "rebuild" ]; then
                 echo "forcing rebuild from snapshotId $init_snapshotId"
                 export snapshotId="$init_snapshotId"
                 export dropletId=""
@@ -63,6 +70,6 @@ jobs:
                 export snapshotId=""
                 export dropletId="$init_dropletId"
               fi
-            - ./cycle.sh
+            - if [ -z "$skip" ]; then ./cycle.sh; fi
             
             
