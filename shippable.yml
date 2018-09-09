@@ -13,10 +13,10 @@ resources:
       recipients:
         - "#factorio"
 
-  - name: factorio-timer
-    type: time
-    versionTemplate:
-      interval: "0 */2 * * *"
+  # - name: factorio-timer
+  #   type: time
+  #   versionTemplate:
+  #     interval: "0 */2 * * *"
 
   - name: digitalocean-creds
     type: integration
@@ -43,7 +43,7 @@ jobs:
       - IN: digitalocean-creds
       - IN: factorio-do-keys
       - IN: factorio-slack
-      - IN: factorio-timer
+      #- IN: factorio-timer
       - IN: factorio-trigger
       - IN: factorio-controller
         switch: off
