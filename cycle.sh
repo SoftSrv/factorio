@@ -1,6 +1,6 @@
 #!/bin/bash 
 set -e
-#DO_TOKEN should be pre-defined
+#DO_TOKEN should be pre-defined in the env.
 source send_msg.sh
 write_msg() {
   echo "---> $@"

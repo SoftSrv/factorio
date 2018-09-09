@@ -49,6 +49,7 @@ jobs:
                 - fVersion: "0.16"
                 - snapshotName: "factorio-ss"
                 - snapshotId: ""
+                - dropletId: ""
                 - region: sfo2
                 - size: s-1vcpu-2gb
                 - skip: ""
@@ -67,10 +68,6 @@ jobs:
                 if [ "$message" == "start" ] && [ -z $snapshotId ]; then
                   ls
                   send_msg "Skipping start. The server should already be running."
-                  #slack_text=
-                  #echo "{\"text\":\"$slack_text\",\"channel\":\"@trriplejay\"}" > payload.json
-                  #shipctl notify factorio-slack -payload payload.json
-                  #./respond.sh "Skipping start. The server should already be running."
                   skip=true
                 elif [ "$message" == "stop" ] && [ -z $dropletId ]; then
                   send_msg "Skipping stop. The server is already stopped."
@@ -79,7 +76,11 @@ jobs:
                   send_msg "Bad command '$message'. only 'start' or 'stop' are accepted"
                   skip=true
                 else
-                  send_msg "$message action initiated by $slack_user"
+                  if [ -n $slack_user ]; then
+                    send_msg "$message action initiated by $slack_user"
+                  else
+                    send_msg "$message action initiated by $JOB_TRIGGERED_BY_NAME"
+                  fi                  
                 fi
               elif [ "$FORCE_ACTION" == "rebuild" ]; then
                 send_msg "Rebuild has been forced."
