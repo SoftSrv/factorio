@@ -78,11 +78,10 @@ restore_snapshot() {
   write_msg "done"
 }
 run_container() {
-  write_msg "executing commands on remote machine"
-  exec_doctl compute ssh $dropletId --ssh-command mkdir -p ~/factorio
+  write_msg "executing commands on remote machine"  
   shipctl replace start.sh
-  scp -i $FACTORIODOKEYS_PRIVATE_KEY_PATH ./start.sh:/home/root/factorio
-  exec_doctl compute ssh $dropletId --ssh-command mkdir -p ~/factorio
+  scp -i $FACTORIODOKEYS_PRIVATE_KEY_PATH start.sh:/home/factorio
+  exec_doctl compute ssh $dropletId --ssh-command "sh /home/factorio/start.sh"
   write_msg "done"
 }
 write_state() {
@@ -94,7 +93,6 @@ write_state() {
   shipctl copy_file_to_state state.env
   write_msg "done"
 }
-
 
 validate_prereqs
 if [ -n "$dropletId" ] && [ -z "$snapshotId" ]; then
@@ -109,6 +107,8 @@ if [ -n "$dropletId" ] && [ -z "$snapshotId" ]; then
 elif [ -n "$snapshotId" ] && [ -z "$dropletId" ]; then 
   send_msg "Restoring droplet from snapshot $snapshotId"
   restore_snapshot
+  sleep 2
+  run_container
   sleep 2
   destroy_snapshot
   sleep 2

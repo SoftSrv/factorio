@@ -1,11 +1,10 @@
 #!/bin/bash
-TAG=$fVersion
 
-if [ -z "$TAG" ]; then
-  TAG=latest
+if [ -z "$fVersion" ]; then
+  echo "factorio version not defined"
 fi
 
-docker pull dtandersen/factorio:$TAG
+docker pull dtandersen/factorio:$fVersion
 
 ID=$(docker ps -aq --filter name=factorio)
 
@@ -17,8 +16,8 @@ fi
 docker run -d  \
   -p 34197:34197/udp \
   -p 27015:27015/tcp \
-  -v /home/root/factorio:/factorio \
+  -v /home/factorio:/factorio \
   --name factorio \
   --restart=always \
-  --user=root
-  dtandersen/factorio:$TAG
+  --user=root \
+  dtandersen/factorio:$fVersion
