@@ -1,6 +1,7 @@
 #!/bin/bash 
 set -e
 #DO_TOKEN should be pre-defined in the env.
+export publicIP=""
 source send_msg.sh
 write_msg() {
   echo "---> $@"
@@ -64,7 +65,7 @@ destroy_droplet() {
 }
 restore_snapshot() {
   write_msg "restoring droplet from snapshot $snapshotId"
-  exec_doctl compute droplet create factorio --image $snapshotId --tag-name factorio --region $region --size $size --wait
+  exec_doctl compute droplet create factorio --image $snapshotId --tag-name factorio --region $region --size $size --wait --ssh-keys $SHIP_FINGERPRINT --ssh-keys $HOME_FINGERPRINT
   write_msg "done"
   write_msg "finding new dropletId and publicIP"
   result=$(doctl compute droplet list --no-header --format ID,PublicIPv4 --tag-name factorio -t $DO_TOKEN)
@@ -74,6 +75,14 @@ restore_snapshot() {
   write_msg "publicIP is $publicIP"
   shipctl put_resource_state $JOB_NAME versionName "$publicIP"
   send_msg "New droplet started at IP: $publicIP"
+  write_msg "done"
+}
+run_container() {
+  write_msg "executing commands on remote machine"
+  exec_doctl compute ssh $dropletId --ssh-command mkdir -p ~/factorio
+  shipctl replace start.sh
+  scp -i $FACTORIODOKEYS_PRIVATE_KEY_PATH ./start.sh:/home/root/factorio
+  exec_doctl compute ssh $dropletId --ssh-command mkdir -p ~/factorio
   write_msg "done"
 }
 write_state() {

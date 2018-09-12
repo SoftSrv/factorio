@@ -1,5 +1,5 @@
 #!/bin/bash
-TAG=$1
+TAG=$fVersion
 
 if [ -z "$TAG" ]; then
   TAG=latest
@@ -17,7 +17,8 @@ fi
 docker run -d  \
   -p 34197:34197/udp \
   -p 27015:27015/tcp \
-  -v /opt/factorio:/factorio \
+  -v /home/root/factorio:/factorio \
   --name factorio \
   --restart=always \
+  --user=root
   dtandersen/factorio:$TAG
