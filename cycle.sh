@@ -7,7 +7,6 @@ write_msg() {
   echo "---> $@"
 }
 exec_doctl() {
-  echo "Executing: doctl $@"
   eval "doctl $@ -t $DO_TOKEN"
 }
 
