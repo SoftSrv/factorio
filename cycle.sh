@@ -86,6 +86,8 @@ run_container() {
   write_msg "about to execute: $scp_cmd"
   shipctl retry "eval $scp_cmd"
   exec_doctl compute ssh $dropletId --ssh-command "sh /home/factorio/start.sh" --ssh-key-path $FACTORIODOKEYS_PRIVATE_KEY_PATH
+  sleep 5
+  exec_doctl compute ssh $dropletId --ssh-command "sudo docker ps -a" --ssh-key-path $FACTORIODOKEYS_PRIVATE_KEY_PATH
   write_msg "done"
 }
 write_state() {
