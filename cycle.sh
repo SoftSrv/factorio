@@ -80,14 +80,14 @@ restore_snapshot() {
 run_container() {
   write_msg "starting factorio container"  
   shipctl replace start.sh
-  doctl compute ssh $dropletId --ssh-command "mkdir -p /home/factorio" --ssh-key-path $FACTORIODOKEYS_PRIVATE_KEY_PATH -t $DO_TOKEN
+  doctl compute ssh $dropletId --ssh-command 'mkdir -p /home/factorio' --ssh-key-path $FACTORIODOKEYS_PRIVATE_KEY_PATH -t $DO_TOKEN
   ssh-add $FACTORIODOKEYS_PRIVATE_KEY_PATH
   scp_cmd="scp -i $FACTORIODOKEYS_PRIVATE_KEY_PATH start.sh root@$publicIP:/home/factorio"
   write_msg "about to execute: $scp_cmd"
   shipctl retry "eval $scp_cmd"
-  doctl compute ssh $dropletId --ssh-command "sh /home/factorio/start.sh" --ssh-key-path $FACTORIODOKEYS_PRIVATE_KEY_PATH -t $DO_TOKEN
+  doctl compute ssh $dropletId --ssh-command 'sh /home/factorio/start.sh' --ssh-key-path $FACTORIODOKEYS_PRIVATE_KEY_PATH -t $DO_TOKEN
   sleep 5
-  doctl compute ssh $dropletId --ssh-command "sudo docker ps -a" --ssh-key-path $FACTORIODOKEYS_PRIVATE_KEY_PATH -t $DO_TOKEN
+  doctl compute ssh $dropletId --ssh-command 'sudo docker ps -a' --ssh-key-path $FACTORIODOKEYS_PRIVATE_KEY_PATH -t $DO_TOKEN
   write_msg "done"
 }
 write_state() {
