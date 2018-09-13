@@ -82,6 +82,7 @@ run_container() {
   shipctl replace start.sh
   doctl compute ssh $dropletId --ssh-command 'mkdir -p /home/factorio' --ssh-key-path $FACTORIODOKEYS_PRIVATE_KEY_PATH -t $DO_TOKEN
   ssh-add $FACTORIODOKEYS_PRIVATE_KEY_PATH
+  ls -latr
   scp_cmd="scp -i $FACTORIODOKEYS_PRIVATE_KEY_PATH start.sh root@$publicIP:/home/factorio"
   write_msg "about to execute: $scp_cmd"
   shipctl retry "eval $scp_cmd"
