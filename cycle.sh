@@ -80,7 +80,9 @@ restore_snapshot() {
 run_container() {
   write_msg "executing commands on remote machine"  
   shipctl replace start.sh
-  scp -i $FACTORIODOKEYS_PRIVATE_KEY_PATH start.sh:root@$publicIP:/home/factorio
+  scp_cmd="scp -i $FACTORIODOKEYS_PRIVATE_KEY_PATH start.sh:root@$publicIP:/home/factorio"
+  echo "about to execute $scp_cmd"
+  eval $scp_cmd
   exec_doctl compute ssh $dropletId --ssh-command "sh /home/factorio/start.sh"
   write_msg "done"
 }
