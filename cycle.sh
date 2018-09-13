@@ -7,7 +7,7 @@ write_msg() {
   echo "---> $@"
 }
 exec_doctl() {
-  eval "doctl $@ -t $DO_TOKEN"
+  eval doctl "$@" -t $DO_TOKEN
 }
 
 validate_prereqs() {
