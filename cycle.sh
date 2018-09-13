@@ -78,12 +78,12 @@ restore_snapshot() {
   write_msg "done"
 }
 run_container() {
-  write_msg "executing commands on remote machine"  
+  write_msg "starting factorio container"  
   shipctl replace start.sh
   ssh-add $FACTORIODOKEYS_PRIVATE_KEY_PATH
   scp_cmd="scp -i $FACTORIODOKEYS_PRIVATE_KEY_PATH start.sh root@$publicIP:/home/factorio"
-  write_msg "about to execute $scp_cmd"
-  eval $scp_cmd
+  write_msg "about to execute: $scp_cmd"
+  shipctl retry "eval $scp_cmd"
   exec_doctl compute ssh $dropletId --ssh-command "sh /home/factorio/start.sh" --ssh-key-path $FACTORIODOKEYS_PRIVATE_KEY_PATH
   write_msg "done"
 }
@@ -110,7 +110,7 @@ if [ -n "$dropletId" ] && [ -z "$snapshotId" ]; then
 elif [ -n "$snapshotId" ] && [ -z "$dropletId" ]; then 
   send_msg "Restoring droplet from snapshot $snapshotId"
   restore_snapshot
-  sleep 2
+  sleep 10
   run_container
   sleep 2
   destroy_snapshot
