@@ -114,8 +114,8 @@ if [ -n "$dropletId" ] && [ -z "$snapshotId" ]; then
 elif [ -n "$snapshotId" ] && [ -z "$dropletId" ]; then 
   send_msg "Restoring droplet from snapshot $snapshotId"
   restore_snapshot
-  sleep 10
-  run_container
+  #sleep 10
+  #run_container
   sleep 2
   destroy_snapshot
   sleep 2
