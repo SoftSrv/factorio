@@ -80,6 +80,7 @@ restore_snapshot() {
 run_container() {
   write_msg "starting factorio container"  
   shipctl replace start.sh
+  exec_doctl compute ssh $dropletId --ssh-command "mkdir -p /home/factorio" --ssh-key-path $FACTORIODOKEYS_PRIVATE_KEY_PATH
   ssh-add $FACTORIODOKEYS_PRIVATE_KEY_PATH
   scp_cmd="scp -i $FACTORIODOKEYS_PRIVATE_KEY_PATH start.sh root@$publicIP:/home/factorio"
   write_msg "about to execute: $scp_cmd"
