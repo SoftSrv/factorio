@@ -7,6 +7,7 @@ write_msg() {
   echo "---> $@"
 }
 exec_doctl() {
+  echo "Executing: doctl $@"
   eval "doctl $@ -t $DO_TOKEN"
 }
 
@@ -82,9 +83,9 @@ run_container() {
   shipctl replace start.sh
   ssh-add $FACTORIODOKEYS_PRIVATE_KEY_PATH
   scp_cmd="scp -i $FACTORIODOKEYS_PRIVATE_KEY_PATH start.sh root@$publicIP:/home/factorio"
-  echo "about to execute $scp_cmd"
+  write_msg "about to execute $scp_cmd"
   eval $scp_cmd
-  exec_doctl compute ssh $dropletId --ssh-command "sh /home/factorio/start.sh"
+  exec_doctl compute ssh $dropletId --ssh-command "sh /home/factorio/start.sh" --ssh-key-path $FACTORIODOKEYS_PRIVATE_KEY_PATH
   write_msg "done"
 }
 write_state() {
